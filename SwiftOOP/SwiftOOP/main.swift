@@ -7,12 +7,10 @@
 
 import Foundation
 
-print("Hello, World!")
+let user = User(name: "Atıl", age: 50, job: "Yazılım")
+print(user.job)
+user.job = "Eğitmen"
+print(user.job)
 
-let user = User()
-user.name = "Atıl"
-user.age = 50
-user.job = "Yazılım"
-
-let user2 = User()
+//let user2 = User(nameInput: <#String#>, ageInput: <#Int#>, jobInput: <#String#>)
 
