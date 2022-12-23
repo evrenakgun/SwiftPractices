@@ -10,8 +10,10 @@ import UIKit
 
 class Countries {
     var name : String
+    var code : String
     
-    init(name: String) {
+    init(name: String, code: String) {
         self.name = name
+        self.code = code
     }
 }

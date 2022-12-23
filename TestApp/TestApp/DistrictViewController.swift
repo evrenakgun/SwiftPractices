@@ -23,7 +23,7 @@ class DistrictViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func districtManager() {
-        let kadikoy = Districts(name: "Kadıköy")
+        let kadikoy = Districts(name: "Kadıköy", cityName: "İstanbul")
         
         districtsArray.append(kadikoy)
     }

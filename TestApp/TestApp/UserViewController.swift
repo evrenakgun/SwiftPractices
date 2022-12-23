@@ -20,7 +20,7 @@ class UserViewController: UIViewController, UITableViewDelegate, UITableViewData
         countryTableView.dataSource = self
         
         //Countries
-        let turkey = Countries(name: "Türkiye")
+        let turkey = Countries(name: "Türkiye", code: "TR")
         
         countriesArray.append(turkey)
     }
@@ -34,5 +34,10 @@ class UserViewController: UIViewController, UITableViewDelegate, UITableViewData
         cell.textLabel?.text = countriesArray[indexPath.row].name
         return cell
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        performSegue(withIdentifier: "toCityVC", sender: nil)
+    }
+    
     
 }

@@ -20,7 +20,7 @@ class CityViewController: UIViewController, UITableViewDelegate, UITableViewData
         cityTableView.dataSource = self
         
         //Cities
-        let istanbul = Cities(name: "İstanbul")
+        let istanbul = Cities(name: "İstanbul", countryCode: "TR")
         
         citiesArray.append(istanbul)
     }
@@ -34,6 +34,10 @@ class CityViewController: UIViewController, UITableViewDelegate, UITableViewData
         cell.textLabel?.text = citiesArray[indexPath.row].name
         
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        performSegue(withIdentifier: "toDistrictVC", sender: nil)
     }
     
 }

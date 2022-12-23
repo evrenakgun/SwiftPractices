@@ -10,8 +10,10 @@ import UIKit
 
 class Districts {
     var name : String
+    var cityName : String
     
-    init(name: String) {
+    init(name: String, cityName: String) {
         self.name = name
+        self.cityName = cityName
     }
 }
