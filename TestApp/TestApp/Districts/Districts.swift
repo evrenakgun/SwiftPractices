@@ -9,11 +9,13 @@ import Foundation
 import UIKit
 
 class Districts {
+    var id : UUID?
     var name : String
-    var cityName : String
+    var cityId : String
     
-    init(name: String, cityName: String) {
+    init(id: UUID? = nil, name: String, cityId: String) {
+        self.id = id
         self.name = name
-        self.cityName = cityName
+        self.cityId = cityId
     }
 }
