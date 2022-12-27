@@ -14,6 +14,7 @@ class DetailsViewController: UIViewController, UIImagePickerControllerDelegate, 
     @IBOutlet weak var nameTextField: UITextField!
     @IBOutlet weak var priceTextField: UITextField!
     @IBOutlet weak var sizeTextField: UITextField!
+    @IBOutlet weak var saveButtonOutlet: UIButton!
     
     var selectedItemName = ""
     var selectedItemUUID : UUID?
@@ -22,12 +23,51 @@ class DetailsViewController: UIViewController, UIImagePickerControllerDelegate, 
         super.viewDidLoad()
         
         if selectedItemName != "" {
+            // Buton saklama
+            saveButtonOutlet.isHidden = true
+            
             //Core data seçilen ürün bilgilerini göster
             if let uuidString = selectedItemUUID?.uuidString {
-                print(uuidString)
+                let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                let context = appDelegate.persistentContainer.viewContext
+                
+                let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Shopping")
+                // predicate komutu ile sadece tablodan seçilen id'nin altındaki ürün özelliklerini listelemesini sağlıyoruz.
+                // "id = %@" id şuna eşit olanları getir demektir.
+                fetchRequest.predicate = NSPredicate(format: "id = %@", uuidString)
+                fetchRequest.returnsObjectsAsFaults = false
+                
+                do {
+                    let results = try context.fetch(fetchRequest)
+                    
+                    if results.count > 0 {
+                        for result in results as! [NSManagedObject] {
+                            if let name = result.value(forKey: "name") as? String {
+                                nameTextField.text = name
+                            }
+                            
+                            if let price = result.value(forKey: "price") as? Int {
+                                priceTextField.text = String(price)
+                            }
+                            
+                            if let size = result.value(forKey: "size") as? String {
+                                sizeTextField.text = size
+                            }
+                            
+                            if let imageData = result.value(forKey: "image") as? Data {
+                                let image = UIImage(data: imageData)
+                                imageView.image = image
+                            }
+                        }
+                    }
+                } catch {
+                    print("hata var")
+                }
             }
             
         } else {
+            saveButtonOutlet.isHidden = false
+            saveButtonOutlet.isEnabled = false // butonu tıklanamaz hale getirir.
             nameTextField.text = ""
             priceTextField.text = ""
             sizeTextField.text = ""
@@ -51,6 +91,7 @@ class DetailsViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         imageView.image = info[.editedImage] as? UIImage
+        saveButtonOutlet.isEnabled = true
         self.dismiss(animated: true, completion: nil)
     }
     
@@ -59,6 +100,8 @@ class DetailsViewController: UIViewController, UIImagePickerControllerDelegate, 
     }
     
     @IBAction func saveButton(_ sender: Any) {
+        
+        //veritabanına kayıt işlemi
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let context = appDelegate.persistentContainer.viewContext
         
