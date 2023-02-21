@@ -2,7 +2,7 @@
 //  SceneDelegate.swift
 //  PhotoSharingApp
 //
-//  Created by Evren Akgün on 15.02.2023.
+//  Created by Evren Akgün on 21.02.2023.
 //
 
 import UIKit
