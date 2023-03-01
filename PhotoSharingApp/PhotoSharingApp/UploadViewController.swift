@@ -6,6 +6,11 @@
 //
 
 import UIKit
+import FirebaseCore
+import FirebaseStorage
+import FirebaseFirestore
+import FirebaseAuth
+
 
 class UploadViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
@@ -36,7 +41,51 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     }
     
     @IBAction func uploadTapped(_ sender: Any) {
+        let storage = Storage.storage()
+        let storageReference = storage.reference()
         
+        let mediaFolder = storageReference.child("media")
+        
+        if let data = imageView.image?.jpegData(compressionQuality: 0.5) {
+            let uuid = UUID().uuidString
+            
+            let imageReference = mediaFolder.child("\(uuid).jpg")
+            imageReference.putData(data) { storagemetadata, error in
+                if error != nil {
+                    self.errorMessage(title: "Error!", message: error?.localizedDescription ?? "You got an error. Please try again.")
+                } else {
+                    imageReference.downloadURL { url, error in
+                        if error == nil {
+                            let imageUrl = url?.absoluteString
+                            
+                            if let imageUrl = imageUrl {
+                                
+                                let firestoreDatabase = Firestore.firestore()
+                                
+                                let firestorePost = ["imageurl" : imageUrl, "comment" : self.noteTextField, "email" : Auth.auth().currentUser!.email!, "postdate" : FieldValue.serverTimestamp()] as [String : Any]
+                                
+                                
+                                firestoreDatabase.collection("Post").addDocument(data: firestorePost) { error in
+                                    if error != nil {
+                                        self.errorMessage(title: "Error!", message: error?.localizedDescription ?? "You got an error. Please try again.")
+                                    } else {
+                                        
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    func errorMessage(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertController.Style.alert)
+        
+        let okButton = UIAlertAction(title: "OK", style: UIAlertAction.Style.default)
+        alert.addAction(okButton)
+        self.present(alert, animated: true)
     }
     
 }
