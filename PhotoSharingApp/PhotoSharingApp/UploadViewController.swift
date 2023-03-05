@@ -15,7 +15,7 @@ import FirebaseAuth
 class UploadViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     @IBOutlet weak var imageView: UIImageView!
-    @IBOutlet weak var noteTextField: UITextField!
+    @IBOutlet weak var commentTextField: UITextField!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -62,14 +62,16 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
                                 
                                 let firestoreDatabase = Firestore.firestore()
                                 
-                                let firestorePost = ["imageurl" : imageUrl, "comment" : self.noteTextField, "email" : Auth.auth().currentUser!.email!, "postdate" : FieldValue.serverTimestamp()] as [String : Any]
+                                let firestorePost = ["imageurl" : imageUrl, "comment" : self.commentTextField.text!, "email" : Auth.auth().currentUser!.email, "postdate" : FieldValue.serverTimestamp()] as [String : Any]
                                 
                                 
                                 firestoreDatabase.collection("Post").addDocument(data: firestorePost) { error in
                                     if error != nil {
                                         self.errorMessage(title: "Error!", message: error?.localizedDescription ?? "You got an error. Please try again.")
                                     } else {
-                                        
+                                        self.commentTextField.text = ""
+                                        self.imageView.image = UIImage(named: "uploadImage")
+                                        self.tabBarController?.selectedIndex = 0
                                     }
                                 }
                             }
