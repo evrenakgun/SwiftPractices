@@ -16,9 +16,10 @@ class FeedViewController: UIViewController, UITableViewDelegate, UITableViewData
 
     @IBOutlet weak var tableView: UITableView!
     
-    var emailArray = [String]()
-    var commentArray = [String]()
-    var imageArray = [String]()
+    var postArray = [Post]()
+//    var emailArray = [String]()
+//    var commentArray = [String]()
+//    var imageArray = [String]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,24 +34,27 @@ class FeedViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         let firestoreDatabase = Firestore.firestore()
         
-        firestoreDatabase.collection("Post").addSnapshotListener { snapshot, error in
+        firestoreDatabase.collection("Post").order(by: "postdate", descending: true).addSnapshotListener { snapshot, error in
             if error != nil {
                 print(error?.localizedDescription)
             } else {
                 if snapshot?.isEmpty != true && snapshot != nil {
+                    
+//                    self.emailArray.removeAll()
+//                    self.imageArray.removeAll()
+//                    self.commentArray.removeAll()
+                    self.postArray.removeAll()
+                    
                     for document in snapshot!.documents {
                         //let documentId = document.documentID
                         
                         if let imageUrl = document.get("imageurl") as? String {
-                            self.imageArray.append(imageUrl)
-                        }
-                        
-                        if let comment = document.get("comment") as? String {
-                            self.commentArray.append(comment)
-                        }
-                        
-                        if let email = document.get("email") as? String {
-                            self.emailArray.append(email)
+                            if let comment = document.get("comment") as? String {
+                                if let email = document.get("email") as? String {
+                                    let post = Post(email: email, comment: comment, imageUrl: imageUrl)
+                                    self.postArray.append(post)
+                                }
+                            }
                         }
                     }
                     
@@ -62,14 +66,14 @@ class FeedViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return emailArray.count
+        return postArray.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! FeedCell
-        cell.emailText.text = emailArray[indexPath.row]
-        cell.commentText.text = commentArray[indexPath.row]
-        cell.postImageView.sd_setImage(with: URL(string: self.imageArray[indexPath.row]))
+        cell.emailText.text = postArray[indexPath.row].email
+        cell.commentText.text = postArray[indexPath.row].comment
+        cell.postImageView.sd_setImage(with: URL(string: self.postArray[indexPath.row].imageUrl))
         
         return cell
     }
